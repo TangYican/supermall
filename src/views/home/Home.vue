@@ -1,6 +1,8 @@
 <template>
   <div id="home" class="wrapper">
-    <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
+    <nav-bar class="home-nav">
+      <div slot="center">购物街</div>
+    </nav-bar>
     <tab-control :titles="['流行', '新款', '精选']"
                  @tabClick="tabClick"
                  ref="tabControl1"
@@ -34,8 +36,8 @@
   import Scroll from 'components/common/scroll/Scroll'
   import BackTop from 'components/content/backTop/BackTop'
 
-  import { getHomeMultidata, getHomeGoods } from "network/home"
-  import {debounce} from "common/utils";
+  import {getHomeMultidata, getHomeGoods} from "network/home"
+  import {itemListenerMixin} from "common/mixin";
 
   export default {
     name: "Home",
@@ -49,6 +51,7 @@
       Scroll,
       BackTop
     },
+    mixins: [itemListenerMixin],
     data() {
       return {
         banners: [],
@@ -75,10 +78,14 @@
     },
     activated() {
       this.$refs.scroll.scrollTo(0, this.saveY, 0)
-      this.$refs.scroll.refresh()
+      this.$refs.scroll.newRefresh()
     },
     deactivated() {
+      //保存Y值
       this.saveY = this.$refs.scroll.getScrollY()
+
+      //取消全局时间的监听
+      this.$bus.$off('itemImgLoad', this.itemImgListener)
     },
     created() {
       // 1.请求多个数据
@@ -88,13 +95,11 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+
+
     },
     mounted() {
-      // 1.图片加载完成的事件监听
-      const refresh = debounce(this.$refs.scroll.refresh, 50)
-      this.$bus.$on('itemImageLoad', () => {
-        refresh()
-      })
+      this.tabClick(0)
     },
     methods: {
       /**
