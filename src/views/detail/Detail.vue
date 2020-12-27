@@ -5,6 +5,9 @@
             ref="scroll"
             :probe-type="3"
             @scroll="contentScroll">
+      <ul>
+        <li v-for="item in $store.state.cartList">{{item}}</li>
+      </ul>
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods"/>
       <detail-shop-info :shop="shop"/>
@@ -187,10 +190,10 @@
         product.title = this.goods.title;
         product.desc = this.goods.desc;
         product.price = this.goods.realPrice;
-        product.iid = this.this.iid;
+        product.iid = this.iid;
 
         // 2.将商品加入购物车里
-
+        this.$store.dispatch('addCart', product)
       }
     }
   }
