@@ -5,9 +5,6 @@
             ref="scroll"
             :probe-type="3"
             @scroll="contentScroll">
-      <ul>
-        <li v-for="item in $store.state.cartList">{{item}}</li>
-      </ul>
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods"/>
       <detail-shop-info :shop="shop"/>
@@ -19,6 +16,7 @@
     <detail-bottom-bar @addCart="addToCart"/>
 
     <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
+    <!--    <toast :message="message" :show="show"/>-->
   </div>
 </template>
 
@@ -39,6 +37,8 @@
   import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "network/detail";
   import {itemListenerMixin, backTopMixin} from "common/mixin";
   import {debounce} from "common/utils";
+
+  import {mapActions} from 'vuex'
 
   export default {
     name: "Detail",
@@ -70,6 +70,8 @@
         themeTopYs: [],
         getThemeTopY: null,
         currentIndex: 0,
+        // message: '',
+        // show: false
       }
     },
     created() {
@@ -154,6 +156,7 @@
       this.$bus.$off('itemImgLoad', this.itemImgListener)
     },
     methods: {
+      ...mapActions([addCart]),
       imageLoad() {
         this.newRefresh()
         this.getThemeTopY()
@@ -191,9 +194,15 @@
         product.desc = this.goods.desc;
         product.price = this.goods.realPrice;
         product.iid = this.iid;
-
         // 2.将商品加入购物车里
-        this.$store.dispatch('addCart', product)
+        this.addCart(product).then((res) => {
+          // console.log(this.$toast);
+          // this.$toast.show(res, 2000)
+        })
+
+        // this.$store.dispatch('addCart', product).then(res => {
+        //   console.log(res);
+        // })
       }
     }
   }
