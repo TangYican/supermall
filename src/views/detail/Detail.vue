@@ -156,7 +156,7 @@
       this.$bus.$off('itemImgLoad', this.itemImgListener)
     },
     methods: {
-      ...mapActions([addCart]),
+      ...mapActions(['addCart']),
       imageLoad() {
         this.newRefresh()
         this.getThemeTopY()
@@ -196,7 +196,7 @@
         product.iid = this.iid;
         // 2.将商品加入购物车里
         this.addCart(product).then((res) => {
-          // console.log(this.$toast);
+          console.log(this.$toast);
           // this.$toast.show(res, 2000)
         })
 
